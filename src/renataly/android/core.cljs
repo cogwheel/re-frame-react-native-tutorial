@@ -1,6 +1,6 @@
 (ns renataly.android.core
   (:require [reagent.core :as r :refer [atom]]
-            [re-frame.core :refer [subscribe dispatch dispatch-sync]]
+            [re-frame.core :refer [subscribe dispatch dispatch-sync reg-event-db reg-sub]]
             [renataly.events]
             [renataly.subs]))
 
@@ -15,26 +15,35 @@
 (def logo-img (js/require "./images/cljs.png"))
 
 (defn alert [title]
-      (.alert (.-Alert ReactNative) title))
+  (.alert (.-Alert ReactNative) title))
 
-(defn greeting [props]
-  (let [greeting-text (subscribe [:get-greeting])]
+(reg-event-db
+  :toggle
+  (fn [db _]
+    (assoc db :show-text (not (:show-text db)))))
+
+(reg-sub
+  :show-text
+  (fn [db _]
+    (:show-text db)))
+
+(defonce do-timer (-> #(let [now (js/Date.)]
+                         (dispatch [:toggle]))
+                      (js/setInterval 1000)))
+
+(defn blink [t]
+  (let [show-text (subscribe [:show-text])]
     (fn []
-      [text {:style {:font-size 30 :font-weight "100" :margin-bottom 20 :text-align "center"}}
-       (str @greeting-text (:name props))])))
+      [text (if @show-text t "")])))
+
 
 (defn app-root []
-  [view {:style {:flex-direction "column" :margin 40 :align-items "center"}}
-   [greeting {:name "Cog"}]
-   [greeting {:name "Juliella"}]
-   [greeting {:name "Jeaye"}]
-   [greeting {:name "Penny"}]
-   [image {:source logo-img
-           :style  {:width 80 :height 80 :margin-bottom 30}}]
-   [touchable-highlight {:style {:background-color "#999" :padding 10 :border-radius 5}
-                         :on-press #(alert "HELLO!")}
-    [text {:style {:color "white" :text-align "center" :font-weight "bold"}} "press me"]]])
+  [view
+   [blink "I love to blink"]
+   [blink "Yes blinking is so great"]
+   [blink "Why did they ever take this out of HTML"]
+   [blink "Look at me look at me look at me"]])
 
 (defn init []
-      (dispatch-sync [:initialize-db])
-      (.registerComponent app-registry "renataly" #(r/reactify-component app-root)))
+  (dispatch-sync [:initialize-db])
+  (.registerComponent app-registry "renataly" #(r/reactify-component app-root)))

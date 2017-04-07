@@ -2,9 +2,9 @@
   (:require [clojure.spec :as s]))
 
 ;; spec of app-db
-(s/def ::greeting string?)
+(s/def ::show-text boolean?)
 (s/def ::app-db
-  (s/keys :req-un [::greeting]))
+  (s/keys :req-un [::show-text]))
 
 ;; initial state of app-db
-(def app-db {:greeting "Welcome, "})
+(def app-db {:show-text true})
