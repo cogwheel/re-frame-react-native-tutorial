@@ -12,37 +12,19 @@
 (def image (r/adapt-react-class (.-Image ReactNative)))
 (def touchable-highlight (r/adapt-react-class (.-TouchableHighlight ReactNative)))
 
-(def logo-img (js/require "./images/cljs.png"))
+(def bigblue {:color "blue"
+             :font-weight "bold"
+             :font-size 30
+             })
 
-(defn alert [title]
-  (.alert (.-Alert ReactNative) title))
-
-(reg-event-db
-  :toggle
-  (fn [db _]
-    (assoc db :show-text (not (:show-text db)))))
-
-(reg-sub
-  :show-text
-  (fn [db _]
-    (:show-text db)))
-
-(defonce do-timer (-> #(let [now (js/Date.)]
-                         (dispatch [:toggle]))
-                      (js/setInterval 1000)))
-
-(defn blink [t]
-  (let [show-text (subscribe [:show-text])]
-    (fn []
-      [text (if @show-text t "")])))
-
+(def red {:color "red"})
 
 (defn app-root []
   [view
-   [blink "I love to blink"]
-   [blink "Yes blinking is so great"]
-   [blink "Why did they ever take this out of HTML"]
-   [blink "Look at me look at me look at me"]])
+   [text {:style red} "just red"]
+   [text {:style bigblue} "just bigblue"]
+   [text {:style (merge bigblue red)} "bigblue then red"]
+   [text {:style (merge red bigblue)} "red then bigblue"]])
 
 (defn init []
   (dispatch-sync [:initialize-db])
