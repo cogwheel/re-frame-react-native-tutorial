@@ -1,10 +1,8 @@
 # renataly
 
-A Clojure library designed to ... well, that part is up to you.
+My attempts to implement react native tutorials in reagent/re-frame with re-natal
 
-## Usage
-
-FIXME
+Each tutorial is in a separate commit named after the tutorial
 
 ## License
 
